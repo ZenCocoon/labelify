@@ -13,6 +13,12 @@ require 'action_controller/assertions/selector_assertions'
 
 require File.dirname(__FILE__) + '/../lib/labelify'
 
+class Address
+  def  self.human_name
+    "human name"
+  end
+end
+
 class LabelifyTest < Test::Unit::TestCase
   include Labelify
   include ActionView::Helpers::TagHelper
@@ -45,8 +51,12 @@ class LabelifyTest < Test::Unit::TestCase
     end
     @person_with_error_on_base = flexmock('person_with_error_on_base', :name => '', :errors => @error_on_base)
 
+    @person_with_human_attribute_field_name = flexmock('person_with_human_attribute_field_name',
+      :name => '', :class => flexmock(:human_attribute_name => 'human attribute name')
+    )
+
     @person_with_human_field_name = flexmock('person_with_human_field_name',
-      :name => '', :class => flexmock(:human_attribute_name => 'human name')
+      :address => Address.new, :class => flexmock(:human_attribute_name => 'Address')
     )
 
     @address = flexmock('address', :city => 'Amsterdam')
@@ -194,12 +204,20 @@ class LabelifyTest < Test::Unit::TestCase
     assert_select 'label[for="person_name"] span.field_name', 'test label'
   end
 
-  def test_labelled_form_for_should_render_label_with_human_name
-    labelled_form_for(:person, @person_with_human_field_name) do |f|
+  def test_labelled_form_for_should_render_label_with_human_attribute_name
+    labelled_form_for(:person, @person_with_human_attribute_field_name) do |f|
       @erbout << f.label(:name)
     end
 
-    assert_select 'label[for="person_name"] span.field_name', 'human name'
+    assert_select 'label[for="person_name"] span.field_name', 'human attribute name'
+  end
+
+  def test_labelled_form_for_should_render_label_with_human_name
+    labelled_form_for(:person, @person_with_human_field_name) do |f|
+      @erbout << f.label(:address)
+    end
+
+    assert_select 'label[for="person_address"] span.field_name', 'human name'
   end
 
   def test_labelled_form_for_should_not_render_error_message
