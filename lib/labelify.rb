@@ -176,7 +176,7 @@ private
 
       label_value = options.delete(:label_value)
       label_value ||= String === args.first && args.shift
-      label_value ||= column_name ? ((Kernel.const_get(column_name).respond_to?(:human_name) rescue nil) ? Kernel.const_get(column_name).human_name : column_name) : method_name.to_s.humanize
+      label_value ||= column_name ? (@object.class.reflect_on_association(column_name.downcase.to_sym).nil? ? column_name : @object.class.reflect_on_association(column_name.downcase.to_sym).klass.human_name) : method_name.to_s.humanize
 
       r = ''
       error_placement = options.delete(:error_placement) || @options[:error_placement] || Labelify.default_error_placement || :inside_label

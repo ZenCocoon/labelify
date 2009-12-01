@@ -52,11 +52,12 @@ class LabelifyTest < Test::Unit::TestCase
     @person_with_error_on_base = flexmock('person_with_error_on_base', :name => '', :errors => @error_on_base)
 
     @person_with_human_attribute_field_name = flexmock('person_with_human_attribute_field_name',
-      :name => '', :class => flexmock(:human_attribute_name => 'human attribute name')
+      :name => '', :class => flexmock(:human_attribute_name => 'human attribute name', :reflect_on_association => nil)
     )
 
     @person_with_human_field_name = flexmock('person_with_human_field_name',
-      :address => Address.new, :class => flexmock(:human_attribute_name => 'Address')
+      :address => Address.new, :class => flexmock(:human_attribute_name => 'Address',
+        :reflect_on_association => flexmock(:klass => Address))
     )
 
     @address = flexmock('address', :city => 'Amsterdam')
