@@ -143,6 +143,7 @@ private
       r << @template.send(selector, @object_name, method_name, *(args << objectify_options(options)), &block)
       r << inline_error_messages(method_name) if error_placement == :after_field
       r << label_content if !label_content.nil? && label_placement == :after_field
+      r = r.html_safe if r.respond_to?(:html_safe)
 
       invisible ? r : content_tag(:div, r, :class => 'field')
     end
@@ -177,6 +178,7 @@ private
       label_value = options.delete(:label_value)
       label_value ||= String === args.first && args.shift
       label_value ||= column_name ? (@object.class.respond_to?(:reflect_on_association) && !@object.class.reflect_on_association(column_name.downcase.to_sym).nil? ? @object.class.reflect_on_association(column_name.downcase.to_sym).klass.human_name : column_name) : method_name.to_s.humanize
+      label_value = label_value.html_safe if label_value.respond_to?(:html_safe)
 
       r = ''
       error_placement = options.delete(:error_placement) || @options[:error_placement] || Labelify.default_error_placement || :inside_label
@@ -194,7 +196,8 @@ private
       if @object.respond_to?(:errors) && @object.errors.on(method_name.to_s)
         messages = @object.errors.on(method_name.to_s)
         messages = messages.kind_of?(Array) ? messages.map{|m|t(m)}.to_sentence : t(messages)
-        " " + content_tag(:span, messages, :class => 'error_message')
+        error = content_tag(:span, messages, :class => 'error_message')
+        error.respond_to?(:html_safe) ? (" " + error).html_safe : " " + error
       else
         ''
       end
