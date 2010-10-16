@@ -194,7 +194,7 @@ private
         options.merge(:object => @object)
       )
       r << inline_error_messages(method_name) if error_placement == :after_label
-      r
+      r.respond_to?(:html_safe) ? r.html_safe : r
     end
 
     # Error messages for given field, concatenated with +to_sentence+.
