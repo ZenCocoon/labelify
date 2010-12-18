@@ -123,6 +123,14 @@ private
       options = args.pop
       options.merge!(:object => @object)
 
+      if @object.class.const_defined?(:REQUIRED_FIELDS) && @object.class::REQUIRED_FIELDS.include?(method_name.to_s)
+        if !options[:class].nil? && !options[:class].split(' ').include?('required')
+          options[:class] += ' required'
+        else
+          options[:class] = 'required'
+        end
+      end
+
       r = ''
       error_placement = options.delete(:error_placement) || @options[:error_placement] || Labelify.default_error_placement || :inside_label
       label_placement = options.delete(:label_placement) || @options[:label_placement] || Labelify.default_label_placement || :before_field
@@ -184,6 +192,7 @@ private
       label_value = options.delete(:label_value)
       label_value ||= String === args.first && args.shift
       label_value ||= column_name ? (@object.class.respond_to?(:reflect_on_association) && !@object.class.reflect_on_association(column_name.downcase.to_sym).nil? ? @object.class.reflect_on_association(column_name.downcase.to_sym).klass.human_name : column_name) : method_name.to_s.humanize
+      label_value += ' <b>*</b>' if options[:class] && options[:class].split(' ').include?('required')
       label_value = label_value.html_safe if label_value.respond_to?(:html_safe)
 
       r = ''
