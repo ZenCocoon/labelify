@@ -192,7 +192,7 @@ private
       label_value = options.delete(:label_value)
       label_value ||= String === args.first && args.shift
       label_value ||= column_name ? (@object.class.respond_to?(:reflect_on_association) && !@object.class.reflect_on_association(column_name.downcase.to_sym).nil? ? @object.class.reflect_on_association(column_name.downcase.to_sym).klass.human_name : column_name) : method_name.to_s.humanize
-      label_value += ' <b>*</b>' if options[:class] && options[:class].split(' ').include?('required')
+      label_value += ' <b>*</b>' if options[:class] && options[:class].split(' ').include?('required') && inline_error_messages(method_name).blank?
       label_value = label_value.html_safe if label_value.respond_to?(:html_safe)
 
       r = ''
