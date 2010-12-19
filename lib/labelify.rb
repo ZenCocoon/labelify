@@ -146,7 +146,11 @@ private
 
       r << label_content if !label_content.nil? && label_placement == :before_field
       r << inline_error_messages(method_name) if error_placement == :before_field
-      r << @template.send(selector, @object_name, method_name, *(args << objectify_options(options)), &block)
+      if %w( localized_country_select select ).include?(selector.to_s)
+        r << @template.send(selector, @object_name, method_name, *(args << {:class => options[:class]}), &block)
+      else
+        r << @template.send(selector, @object_name, method_name, *(args << objectify_options(options)), &block)
+      end
       r << inline_error_messages(method_name) if error_placement == :after_field
       r << label_content if !label_content.nil? && label_placement == :after_field
       r = r.html_safe if r.respond_to?(:html_safe)
