@@ -123,7 +123,7 @@ private
       options = args.pop
       options.merge!(:object => @object)
 
-      options[:field_class] = options[:field_class] ? options[:field_class] + ' field' : 'field'
+      field_class = options[:field_class] ? options.delete(:field_class) + ' field' : 'field'
 
       r = ''
       error_placement = options.delete(:error_placement) || @options[:error_placement] || Labelify.default_error_placement || :inside_label
@@ -153,7 +153,7 @@ private
       r << label_content if !label_content.nil? && label_placement == :after_field
       r = r.html_safe if r.respond_to?(:html_safe)
 
-      invisible || label_value == false ? r : content_tag(:div, r, :class => options[:field_class])
+      invisible || label_value == false ? r : content_tag(:div, r, :class => field_class)
     end
 
     # Returns a submit button.  This button has style class +submit+.  If given a +type+ option +button+
